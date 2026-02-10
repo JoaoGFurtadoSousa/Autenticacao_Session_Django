@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Users
 from hashlib import sha256
+from django.shortcuts import redirect
 
 
 def criptografa_password(password: str):
@@ -30,6 +31,19 @@ def register_user(request):
             print(username)
             password = criptografa_password(password= password)
             usuario = Users.objects.create(username= username, email= email, password= password)
-            return HttpResponse({'response': '201'})
+            return redirect('login/login.html')
         return HttpResponse('Nome menor que três caracteres')
     return render(request, 'cadastro/cadastro.html')
+
+def login_user(request):
+    if request.method == "POST":
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        usuario = Users.objects.get(email = email)
+        if not usuario:
+            raise "Usuario nao existe"
+        password= criptografa_password(password= password)
+        if usuario.password == password:
+            return render(request, 'home.html')
+        print('senha incorreta')
+    return render(request, 'login/login.html')
