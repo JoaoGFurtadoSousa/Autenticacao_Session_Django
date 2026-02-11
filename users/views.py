@@ -23,12 +23,10 @@ def register_user(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         username = valida_tamanho_username(username= username)
-        print(username)
         if Users.objects.filter(email = email).exists():
             return HttpResponse('Usuario com email já cadastrado')
     
         if username:
-            print(username)
             password = criptografa_password(password= password)
             usuario = Users.objects.create(username= username, email= email, password= password)
             return redirect('login/login.html')
@@ -44,6 +42,11 @@ def login_user(request):
             raise "Usuario nao existe"
         password= criptografa_password(password= password)
         if usuario.password == password:
-            return render(request, 'home.html')
+            request.session['user_session'] = usuario.id
+            return render(request, 'home.html', {'usuario': usuario})
         print('senha incorreta')
     return render(request, 'login/login.html')
+
+def logout(request):
+    request.session.flush()
+    return redirect('login_user')
