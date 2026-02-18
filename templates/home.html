@@ -7,8 +7,14 @@
 </head>
 <body>
     {% block content %}
-        <h1>Olá {{usuario.username}} </h1>
+        <h1>Olá {{pessoa.username}} </h1>
         <hr>
+        {% for pessoa in pessoas %}
+            <h3>{{pessoa.username}}</h3>
+         <h3>
+            {{pessoa.email}}
+        </h3>
+        {% endfor %}
         <form method="POST" action="{% url 'logout_user' %}">
             {% csrf_token %} 
             <button type="submit"> Logout </button>

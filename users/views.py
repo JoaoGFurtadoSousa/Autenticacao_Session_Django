@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Users
+from django.contrib.auth.models import User
 from hashlib import sha256
+from django.contrib.auth.hashers import check_password, make_password
 from django.shortcuts import redirect
 
 
@@ -23,13 +24,12 @@ def register_user(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         username = valida_tamanho_username(username= username)
-        if Users.objects.filter(email = email).exists():
+        if User.objects.filter(email = email).exists():
             return HttpResponse('Usuario com email já cadastrado')
     
         if username:
-            password = criptografa_password(password= password)
-            usuario = Users.objects.create(username= username, email= email, password= password)
-            return redirect('login/login.html')
+            usuario = User.objects.create_user(username= username, email= email, password= password)
+            return redirect('login_user')
         return HttpResponse('Nome menor que três caracteres')
     return render(request, 'cadastro/cadastro.html')
 
@@ -37,16 +37,25 @@ def login_user(request):
     if request.method == "POST":
         email = request.POST.get('email')
         password = request.POST.get('password')
-        usuario = Users.objects.get(email = email)
-        if not usuario:
-            raise "Usuario nao existe"
-        password= criptografa_password(password= password)
-        if usuario.password == password:
+        try:
+            usuario = User.objects.get(email = email)
+        except User.DoesNotExist:
+            print('Usuario não existe')
+            return redirect('login_user')
+        
+        print(usuario.password)
+        if check_password(password= password, encoded=usuario.password):
             request.session['user_session'] = usuario.id
-            return render(request, 'home.html', {'usuario': usuario})
+            return redirect('home')
         print('senha incorreta')
     return render(request, 'login/login.html')
 
 def logout(request):
     request.session.flush()
+    return redirect('login_user')
+
+def home(request):
+    if request.session.get('user_session'): #tenta encontrar dentro da session_data alguma chave de dict assim
+        lista_de_pessoas = User.objects.all()
+        return render(request, 'home.html', {'pessoas': lista_de_pessoas})
     return redirect('login_user')
