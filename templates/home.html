@@ -14,7 +14,11 @@
          <h3>
             {{pessoa.email}}
         </h3>
-        {% endfor %}
+        <form method="POST" action="{% url 'change_user' %}">
+             {% csrf_token %} 
+            <button type="submit">Alterar Usuario</button>
+        </form>
+        {% endfor %} 
         <form method="POST" action="{% url 'logout_user' %}">
             {% csrf_token %} 
             <button type="submit"> Logout </button>

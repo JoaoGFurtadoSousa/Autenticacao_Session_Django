@@ -59,3 +59,21 @@ def home(request):
         lista_de_pessoas = User.objects.all()
         return render(request, 'home.html', {'pessoas': lista_de_pessoas})
     return redirect('login_user')
+
+def change_user(request):
+   if request.method == "POST":
+       username = request.POST.get('username')
+       email = request.POST.get('email')
+       password = request.POST.get('password')
+
+       usuario = User.objects.filter(username = username)
+       print(usuario)
+       if usuario:
+           password = make_password(password)
+           usuario.username = username
+           usuario.email = email
+           usuario.password = password
+           usuario.save()
+        
+       return redirect('login_user')
+   return redirect('change_user')
