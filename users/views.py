@@ -4,14 +4,8 @@ from django.contrib.auth.models import User
 from hashlib import sha256
 from django.contrib.auth.hashers import check_password, make_password
 from django.shortcuts import redirect
+from django.contrib.auth import authenticate, login, logout
 
-
-def criptografa_password(password: str):
-    bytes_password = password.encode("utf-8")
-    sha = sha256()
-    sha.update(bytes_password)
-    password_hash = sha.hexdigest()
-    return password_hash
 
 def valida_tamanho_username(username: str):
     if len(username.strip()) <= 2:
@@ -35,27 +29,25 @@ def register_user(request):
 
 def login_user(request):
     if request.method == "POST":
-        email = request.POST.get('email')
+        username = request.POST.get('username')
         password = request.POST.get('password')
-        try:
-            usuario = User.objects.get(email = email)
-        except User.DoesNotExist:
-            print('Usuario não existe')
-            return redirect('login_user')
         
-        print(usuario.password)
-        if check_password(password= password, encoded=usuario.password):
-            request.session['user_session'] = usuario.id
+        usuario = authenticate(request, username= username, password= password)
+        print(usuario)
+        if usuario:
+            print('entorou')
+            login(request, usuario)
             return redirect('home')
         print('senha incorreta')
     return render(request, 'login/login.html')
 
-def logout(request):
-    request.session.flush()
+def logout_user(request):
+    logout(request)
     return redirect('login_user')
 
 def home(request):
-    if request.session.get('user_session'): #tenta encontrar dentro da session_data alguma chave de dict assim
+    print(request.session)
+    if request.user.is_authenticated: #tenta encontrar dentro da session_data alguma chave de dict assim
         lista_de_pessoas = User.objects.all()
         return render(request, 'home.html', {'pessoas': lista_de_pessoas})
     return redirect('login_user')

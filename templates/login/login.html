@@ -9,8 +9,8 @@
     {% block content %}
     <form method="POST" action="{% url 'login_user' %}">
         {% csrf_token %}
-        <label for="email"> Email: </label>
-        <input id="email" type="email" name="email">
+        <label for="username"> Username: </label>
+        <input id="username" type="text" name="username">
         <br>
         <br>
         <label for="password"> Password: </label>
