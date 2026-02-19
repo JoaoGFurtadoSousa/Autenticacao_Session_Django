@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alterar usuario</title>
+    <title>Cadastro</title>
 </head>
 <body>
     {% block content %}
-    <form method="POST" action="{% url 'change_user' usuario.id %}">
+    <form method="POST" action="{% url 'create_user' %}">
         {% csrf_token %}
         <label for="username"> Username: </label>
         <input id="username" type="text" name="username">
@@ -21,10 +21,8 @@
         <input id="password" type="password" name="password">
         <br>
         <br>
-        <button type="submit">Alterar Usuario</button>
+        <button type="submit">Criar novo usuario</button>
     </form>
-    <br>
-
 
     {% endblock %}
 </body>

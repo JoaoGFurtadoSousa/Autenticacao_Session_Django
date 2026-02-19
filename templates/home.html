@@ -7,22 +7,58 @@
 </head>
 <body>
     {% block content %}
-        <h1>Olá {{pessoa.username}} </h1>
+    {% if user.is_superuser %}
+        <h1>Olá {{user}} </h1>
         <hr>
         {% for pessoa in pessoas %}
             <h3>{{pessoa.username}}</h3>
          <h3>
             {{pessoa.email}}
         </h3>
-        <form method="POST" action="{% url 'change_user' %}">
+        <form method="GET" action="{% url 'change_user' pessoa.id %}">
              {% csrf_token %} 
             <button type="submit">Alterar Usuario</button>
         </form>
+        <form method="POST" action="{% url 'exclude_user' pessoa.id %}">
+            {% csrf_token %} 
+            <button type="submit">Excluir Usuario</button>
+        </form>
         {% endfor %} 
+        <br>
+        <br>
+        <form method="GET" action="{% url 'create_user' %}">
+            {% csrf_token %}
+            <button type="submit">Cadastrar Novo Usuario</button>
+        </form>
         <form method="POST" action="{% url 'logout_user' %}">
             {% csrf_token %} 
             <button type="submit"> Logout </button>
         </form>
+    {% else %}
+        <h1>Olá {{user.username}} </h1>
+        <hr>
+        {% for pessoa in pessoas %}
+            <h3>{{pessoa.username}}</h3>
+         <h3>
+            {{pessoa.email}}
+        </h3>
+        <form method="GET" action="{% url 'change_user' pessoa.id %}">
+             {% csrf_token %} 
+            <button type="submit">Alterar Usuario</button>
+        </form>
+        <form method="POST" action="{% url 'exclude_user' pessoa.id %}">
+            {% csrf_token %} 
+            <button type="submit">Excluir Usuario</button>
+        </form>
+        {% endfor %} 
+        <br>
+        <br>
+        <form method="POST" action="{% url 'logout_user' %}">
+            {% csrf_token %} 
+            <button type="submit"> Logout </button>
+        </form>
+    {% endif %}
+
     {% endblock %}
 </body>
 </html>
