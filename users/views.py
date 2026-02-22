@@ -29,7 +29,7 @@ def register_user(request):
         if username:
             password = criptografa_password(password= password)
             usuario = Users.objects.create(username= username, email= email, password= password)
-            return redirect('login/login.html')
+            return redirect('login_user')
         return HttpResponse('Nome menor que três caracteres')
     return render(request, 'cadastro/cadastro.html')
 
@@ -49,4 +49,9 @@ def login_user(request):
 
 def logout(request):
     request.session.flush()
+    return redirect('login_user')
+
+def home(request):
+    if request.session.get('user_session'):
+        return render(request, 'home.html')
     return redirect('login_user')

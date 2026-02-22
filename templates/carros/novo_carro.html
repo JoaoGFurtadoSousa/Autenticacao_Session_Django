@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% block content %}
+        <form method="POST" action="{% url 'novo_carro' %}">
+            {% csrf_token %}
+            {{novo_carro_form}}
+            <button type="submit">Enviar dados</button>
+        </form>
+    {% endblock %}
+</body>
+</html>
