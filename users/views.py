@@ -5,7 +5,7 @@ from hashlib import sha256
 from django.contrib.auth.hashers import check_password, make_password
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
-
+from .forms import ResetPasswordForm
 
 def valida_tamanho_username(username: str):
     if len(username.strip()) <= 2:
@@ -87,3 +87,26 @@ def create_user(request):
             return redirect('home')
         return HttpResponse('Nome menor que três caracteres')
     return render(request, 'cadastro/novo_usuario.html')
+
+
+
+def reset_password_user(request):
+    form = ResetPasswordForm()
+    if request.method == 'GET':
+        return render(request, 'cadastro/reset_password.html', {'form': form})   
+    elif request.method == 'POST':
+        form = ResetPasswordForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password_atual = form.cleaned_data['password_atual']
+            nova_password = form.cleaned_data['nova_password']
+            confirmacao_password = form.cleaned_data['confirmacao_password']
+            usuario = User.objects.get(username = username)
+            if check_password(password_atual, usuario.password):
+                if nova_password == confirmacao_password:
+                    usuario.password = make_password(nova_password)
+                    usuario.save()
+                    return redirect('home')
+                return HttpResponse('Senhas não coincidem')
+            return HttpResponse('Senha atual está incorreta')
+        return render(request, 'cadastro/reset_password.html', {'form': form})
